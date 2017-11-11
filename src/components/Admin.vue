@@ -16,12 +16,19 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in users">
+        <tr v-for="user in users" v-if="user.status==='ACTIVE'">
+          <td>{{ user.id }}</td>
+          <td>{{ user.profile.firstName }} {{ user.profile.lastName }}</td>
+          <td>{{ user.profile.email }}</td>
+          <td>{{ user.status }}</td>
+          <td><button v-on:click="deactivate(user.id)">Deactivate</button></td>
+        </tr>
+        <tr v-for="user in users" v-if="user.status==='STAGED'">
           <td>{{ user.id }}</td>
           <td>{{ user.profile.name }}</td>
           <td>{{ user.profile.email }}</td>
           <td>{{ user.status }}</td>
-          <td><div @click="activate(user.id)"><a href="activate(user.id)">Activate</a></div></td>
+          <td><button v-on:click="activate(user.id)">Activate</button></td>
         </tr>
       </tbody>
     </table>
@@ -60,6 +67,13 @@ export default {
     },
     activate(user_id){
       this.$http.get('http://localhost:5000/activate?user=' + user_id,getAuthHeader()).then(response => {
+        this.users = response.body;
+      }, error => {
+        console.log(error);
+      });
+    },
+    deactivate(user_id){
+      this.$http.get('http://localhost:5000/deactivate?user=' + user_id,getAuthHeader()).then(response => {
         this.users = response.body;
       }, error => {
         console.log(error);

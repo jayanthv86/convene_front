@@ -9,7 +9,8 @@
           <li><router-link to="/profile">My Profile</router-link></li>
           <li><router-link to="/premium-promos">Premium Promos</router-link></li>
           <li><router-link to="/admin">Admin</router-link></li>
-          <li><router-link to="/login">Login with Okta</router-link></li>
+          <li><router-link to="/login">Login with Okta(Redirect)</router-link></li>
+          <li><router-link to="/loginOkta">Login with Okta(Widget)</router-link></li>
           <li><router-link to="/registration">Register</router-link></li>
           <li><router-link to="/logout">Logout</router-link></li>
 

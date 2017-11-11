@@ -7,7 +7,8 @@ import Profile from '@/components/Profile'
 import LoginForm from '@/components/LoginForm'
 import Admin from '@/components/Admin'
 import Registration from '@/components/Registration'
-import { validateAccess, logout, redirect, loginOkta } from '../auth'
+import LoginOkta from '@/components/LoginOkta'
+import { validateAccess, logout, redirect, redirectOkta, loginOkta } from '../auth'
 
 Vue.use(Router)
 
@@ -28,5 +29,7 @@ export default new Router({
     { path: '/redirect', component: redirect },//calls redirect() to extract tokens
     { path: '/admin', beforeEnter: validateAccess, component: Admin},
     { path: '/registration', component: Registration },
+    { path: '/loginOkta', component: LoginOkta },
+    //{ path: '/applications', component: Application }
   ]
 })

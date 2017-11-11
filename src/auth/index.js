@@ -1,5 +1,6 @@
 import router from '../router' //router: required to redirect users
 import OktaAuth from '@okta/okta-auth-js' //okta authjs: required login in Okta
+import SignIn from '@okta/okta-signin-widget'; // okta signin widget: required login in Okta
 
 //constants
 const OKTA_ORG = 'https://jay.okta.com';
@@ -17,6 +18,51 @@ const OKTA_AUTH_JS = new OktaAuth({
   authorizeUrl: AUTHZ_URL,
 });
 const SIGNOUT_OKTA = true;
+const signIn = new SignIn({
+      baseUrl: OKTA_ORG,
+      clientId: CLIENT_ID,
+      redirectUri: REDIRECT_URL,
+      authParams: {
+        issuer: AUTHZ_SERVER,
+        responseType: TOKENS,
+        scopes: SCOPES,
+      },
+      idps: [
+        { //FACEBOOK AS IDP
+          type: 'FACEBOOK',
+          id: '0oa1kqdmtGxvIQb7Z2p6'
+        },
+        { //GOOGLE AS IDP
+          type: 'GOOGLE',
+          id: '0oa1xovoc1OnwYc2T2p6'
+        },
+        //{ //org2org okta SAML
+        //    type: 'MICROSOFT',
+        //    id: '0oa22vkdfc4a0IFIT2p6'
+        //},
+        { // same as above, but custom application instead
+            type: 'MICROSOFT',
+            id: '0oa22vofbC3n0VAWI2p6'
+        },
+        {
+            type: 'LINKEDIN',
+            id: '0oa27dovsbM9kzVpm2p6'
+        },
+
+      ],
+      i18n: {
+        en: {
+          'primaryauth.title': 'Use john/Asdf1234 for the mock Okta server',
+        },
+      },
+      helpLinks: {
+        help: 'https://acme.com/help'
+    }
+  });
+
+export function loginWithOkta(){
+  return signIn;
+};
 
 /**
  * loginOkta
@@ -24,10 +70,23 @@ const SIGNOUT_OKTA = true;
  * @access public
  */
 export function loginOkta(){
-  OKTA_AUTH_JS.token.getWithRedirect({
+  OKTA_AUTH_JS.token.getWithPopup({
     responseType: TOKENS,
     scopes: SCOPES
-  });
+  }).then(function(tokenArray) {
+         //save the id_token and the access_token in the tokenManager
+         OKTA_AUTH_JS.tokenManager.add('access_token', tokenArray[0]);
+         OKTA_AUTH_JS.tokenManager.add('id_token', tokenArray[1]);
+         router.push('/profile')
+       }).catch(function(err) {
+         //Errors during the login are returned as OAuthError
+         alert('error: '+err.errorCode+'\n'+'message: '+err.message);
+         router.push('/error')});
+
+  //OKTA_AUTH_JS.token.getWithPopup({
+  //  responseType: TOKENS,
+    scopes: SCOPES
+  //});
 }
 
 export function loginWithFB(){
@@ -84,7 +143,7 @@ export function loginWithFB(){
  * @access public
  */
 export function redirect() {
-  OKTA_AUTH_JS.token.parseFromUrl().then(function(tokenArray) {
+   OKTA_AUTH_JS.token.parseFromUrl().then(function(tokenArray) {
     //get token from the url
     //save the id_token and the access_token in the tokenManager
     OKTA_AUTH_JS.tokenManager.add('access_token', tokenArray[0]);
@@ -97,7 +156,6 @@ export function redirect() {
   })
 }
 
-
 /**
  * logout
  * Clear the id_token and access_token from tokenManager and redirects user to /home
@@ -105,6 +163,7 @@ export function redirect() {
  */
 export function logout() {
   //Sign out from the app
+  oktaSignIn.tokenManager.clear();
   OKTA_AUTH_JS.tokenManager.clear();
   if(!SIGNOUT_OKTA){
     router.push('/home');
@@ -178,7 +237,10 @@ export function getUserInfo() {
 export function validateAccess(to, from, next) {
   if(!isLoggedIn()){
     router.push('/loginform');
-  }else{
+  }else if(!isLoggedInOkta()){
+    router.push('/loginform');
+  }
+  else{
     next();
   }
 }
@@ -195,6 +257,28 @@ export function isLoggedIn() {
   if(idToken != null && !isTokenExpired(idToken)){
     //check if the access token exists and is not expired
     const accessToken = OKTA_AUTH_JS.tokenManager.get('access_token');
+    if(accessToken != null && !isTokenExpired(accessToken)){
+      userLogged = true;
+    }
+  }
+  if(!userLogged){
+    OKTA_AUTH_JS.tokenManager.clear();
+  }
+  return userLogged;
+}
+
+/**
+ * isLoggedIn
+ * Checks whether the user is logged in. If not, clears the tokenManager
+ * @return boolean true when the user is logged in with a valid session
+ */
+export function isLoggedInOkta() {
+  var userLogged = false;
+  //check if the id token exists and is not expired
+  const idToken = oktaSignIn.tokenManager.get('id_token');
+  if(idToken != null && !isTokenExpired(idToken)){
+    //check if the access token exists and is not expired
+    const accessToken = oktaSignIn.tokenManager.get('access_token');
     if(accessToken != null && !isTokenExpired(accessToken)){
       userLogged = true;
     }

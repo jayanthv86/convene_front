@@ -5,6 +5,9 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Import materialize.css-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css">
+    <script src="https://ok1static.oktacdn.com/assets/js/sdk/okta-signin-widget/1.9.0/js/okta-sign-in.min.js" type="text/javascript"></script>
+    <link href="https://ok1static.oktacdn.com/assets/js/sdk/okta-signin-widget/1.9.0/css/okta-sign-in.min.css" type="text/css" rel="stylesheet">
+
 
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -14,5 +17,118 @@
     <!-- built files will be auto injected -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
+    <div class="oktalogin" style="visibility: hidden">
+      <div id="okta-login-container" class="auth-container main-container can-remove-beacon"></div>
+        <script type="text/javascript">
+          var orgUrl = "https://jay.okta.com";
+          var redirectUrl = "http://localhost:8080/redirect";
+
+          var oktaSignIn = new OktaSignIn({
+            baseUrl: orgUrl,
+            clientId: "0oa4etriw1PASRKAy2p6",
+            redirectUri: "http://localhost:8080/redirect",
+            authScheme: "OAUTH2",
+            authParams: {
+              issuer: "https://jay.okta.com/oauth2/aus4fkma8RksuPc5o2p6",
+              authorizeUrl: "https://jay.okta.com/oauth2/aus4fkma8RksuPc5o2p6/v1/authorize",
+              responseType: ["token", "id_token"],
+              scopes: ["openid", "profile", "email", "promos:read"],
+              display: "page"
+            },
+
+            idps: [
+            { //FACEBOOK AS IDP
+              type: 'FACEBOOK',
+              id: '0oa1kqdmtGxvIQb7Z2p6'
+            },
+            {
+              type: 'MICROSOFT',
+              id: '0oa8a46ksTeNu3Pqd2p6'
+            },
+            //{ //GOOGLE AS IDP
+            //  type: 'GOOGLE',
+            //  id: '0oa1xovoc1OnwYc2T2p6'
+            //},
+            //{ //org2org okta SAML
+            //  type: 'MICROSOFT',
+            //  id: '0oa22vkdfc4a0IFIT2p6'
+            //},
+            //{ // same as above, but custom application instead
+            //   type: 'MICROSOFT',
+            //   id: '0oa22vofbC3n0VAWI2p6'
+            //},
+            {
+               type: 'LINKEDIN',
+               id: '0oa27dovsbM9kzVpm2p6'
+            },
+            //{
+            //   type: 'GOOGLE',
+            //   id: '0oa89kd4jhq2BNVjF2p6'
+            //},
+            {
+               type: 'GOOGLE',
+               id: '0oa89qyw1HrQnivPW2p6'}
+            ],
+            i18n: {
+              en: {
+                'primaryauth.title': 'Use john/Asdf1234 for the mock Okta server',
+            }},
+            helpLinks: {
+                help: 'https://acme.com/help'
+            },
+            logo: '/favicon.ico',
+            features: {
+              rememberMe: true,
+              smsRecovery: true,
+              selfServiceUnlock: true,
+              multiOptionalFactorEnroll: true,
+              autoPush: true,
+              securityImage: true
+            }
+          });
+          oktaSignIn.renderEl({el: '#okta-login-container'},
+            function success(res) {
+                if (res.status === 'SUCCESS') {
+                  oktaSignIn.tokenManager.add('access_token', res[0]);
+                  oktaSignIn.tokenManager.add('id_token', res[1]);
+                  return;
+              }});
+
+          function isLoggedIn(oktaSignIn) {
+              var userLogged = false;
+              //check if the id token exists and is not expired
+              const idToken = oktaSignIn.tokenManager.get('id_token');
+              if(idToken != null && !isTokenExpired(idToken)){
+                //check if the access token exists and is not expired
+                const accessToken = oktaSignIn.tokenManager.get('access_token');
+                if(accessToken != null && !isTokenExpired(accessToken)){
+                  userLogged = true;
+                }
+              }
+              if(!userLogged){
+                oktaSignIn.tokenManager.clear();
+              }
+              alert('User Logged: ' + userLogged);
+              return userLogged;
+            }
+            function isTokenExpired(token) {
+              var tokenExpired = getTokenExpiration(token) < Date.now();
+              if(tokenExpired){
+                alert(
+                  'The token expiration date is due: '+
+                  '\nToken expiration: '+getTokenExpiration(token)+
+                  '\nCurrent time: '+Date()+'.'+
+                  '\nClick OK to start a new session.');
+              }
+              return tokenExpired;
+            }
+            function getTokenExpiration(token){
+              if(!token.expiresAt) { return null; }
+              const date = new Date(0);
+              date.setUTCSeconds(token.expiresAt);
+              return date;
+            }
+        </script>
+      </div>
   </body>
 </html>
