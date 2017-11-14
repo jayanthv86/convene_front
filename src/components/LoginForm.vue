@@ -6,15 +6,14 @@
       <input type="email" v-model="user.login" placeholder="email">
       <input type="password" v-model="user.password" placeholder="password">
       <button type="submit">Login</button> or
-      <button v-on:click="loginFacebook">
-        Sign-up/Login with Facebook
-      </button>
+      <button v-on:click="loginO365">Login with O365</button>
+      <button v-on:click="loginGSuite">Login with Gsuite</button>
     </form>
   </div>
 </template>
 
 <script>
-import { loginWithForm, loginWithFB } from '../auth'
+import { loginWithForm, loginWithO365, loginWithGSuite } from '../auth'
 export default {
   data() {
     return {
@@ -28,8 +27,11 @@ export default {
     login: function(){
       loginWithForm(this.user.login, this.user.password);
     },
-    loginFacebook: function(){
-      loginWithFB();
+    loginO365: function(){
+      loginWithO365();
+    },
+    loginGSuite: function(){
+      loginWithGSuite();
     }
   }
 }

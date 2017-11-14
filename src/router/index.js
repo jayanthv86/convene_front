@@ -2,12 +2,12 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
 import Error from '@/components/Error'
-import Promo from '@/components/Promo'
 import Profile from '@/components/Profile'
 import LoginForm from '@/components/LoginForm'
-import Admin from '@/components/Admin'
-import Registration from '@/components/Registration'
+import Google from '@/components/Google'
 import LoginOkta from '@/components/LoginOkta'
+import Registration from '@/components/Registration'
+import O365 from '@/components/O365'
 import { validateAccess, logout, redirect, redirectOkta, loginOkta } from '../auth'
 
 Vue.use(Router)
@@ -21,13 +21,13 @@ export default new Router({
     { path: '/loginform', component: LoginForm},
     { path: '/error', component: Error},
     //Private pages (displayed only user access is validated)
-    { path: '/premium-promos', beforeEnter: validateAccess, component: Promo},
     { path: '/profile', beforeEnter: validateAccess, component: Profile},
     //Functions without page
     { path: '/login', component: loginOkta },
     { path: '/logout', component: logout },
     { path: '/redirect', component: redirect },//calls redirect() to extract tokens
-    { path: '/admin', beforeEnter: validateAccess, component: Admin},
+    { path: '/google', beforeEnter: validateAccess, component: Google},
+    { path: '/O365', beforeEnter: validateAccess, component: O365},
     { path: '/registration', component: Registration },
     { path: '/loginOkta', component: LoginOkta },
     //{ path: '/applications', component: Application }

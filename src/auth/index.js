@@ -6,8 +6,8 @@ import SignIn from '@okta/okta-signin-widget'; // okta signin widget: required l
 const OKTA_ORG = 'https://jay.okta.com';
 const AUTHZ_SERVER = 'https://jay.okta.com/oauth2/aus4fkma8RksuPc5o2p6';
 const AUTHZ_URL = AUTHZ_SERVER+'/v1/authorize';
-const CLIENT_ID = '0oa4etriw1PASRKAy2p6';
-const REDIRECT_URL = 'http://localhost:8080/redirect';
+const CLIENT_ID = '0oa8yjpi7HfwVsGl82p6';
+const REDIRECT_URL = 'http://localhost:9000/redirect';
 const SCOPES = ['openid', 'profile', 'email', 'promos:read'];
 const TOKENS = ['token', 'id_token'];
 const OKTA_AUTH_JS = new OktaAuth({
@@ -89,11 +89,19 @@ export function loginOkta(){
   //});
 }
 
-export function loginWithFB(){
+export function loginWithO365(){
   OKTA_AUTH_JS.token.getWithRedirect({
     responseType: TOKENS,
     scopes: SCOPES,
-    idp: '0oa1kqdmtGxvIQb7Z2p6'
+    idp: '0oa8a46ksTeNu3Pqd2p6'
+  });
+}
+
+export function loginWithGSuite(){
+  OKTA_AUTH_JS.token.getWithRedirect({
+    responseType: TOKENS,
+    scopes: SCOPES,
+    idp: '0oa89qyw1HrQnivPW2p6'
   });
 }
 
@@ -208,9 +216,11 @@ export function getAccessToken() {
  */
 export function getAuthHeader() {
   var at = getAccessToken();
+  var it = getIdToken();
   return {
     headers:{
-      'Authorization': 'Bearer '+at.accessToken
+      'Authorization': 'Bearer '+at.accessToken,
+      'Identity': it.id_token
     }
   }
 }

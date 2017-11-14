@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     getPublicPromos() {
-      this.$http.get('http://localhost:5000/promos/PUBLIC').then(response => {
+      this.$http.get('http://localhost:6000/promos/PUBLIC').then(response => {
         this.promos = response.body;
       }, error => {
         console.log(error);

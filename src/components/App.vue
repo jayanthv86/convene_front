@@ -1,15 +1,14 @@
 <template>
   <div id="app">
-    <img src="../assets/ice-logo.png">
+    <img src="../assets/convene.png">
     <!-- Menu -->
     <nav class="navbar navbar-default">
       <div class="container">
         <ul class="nav navbar-nav">
           <li><router-link to="/home">Home</router-link></li>
           <li><router-link to="/profile">My Profile</router-link></li>
-          <li><router-link to="/premium-promos">Premium Promos</router-link></li>
-          <li><router-link to="/admin">Admin</router-link></li>
-          <li><router-link to="/login">Login with Okta(Redirect)</router-link></li>
+          <li><router-link to="/google">Get Google details</router-link></li>
+          <li><router-link to="/o365">Get O365 details</router-link></li>
           <li><router-link to="/loginOkta">Login with Okta(Widget)</router-link></li>
           <li><router-link to="/registration">Register</router-link></li>
           <li><router-link to="/logout">Logout</router-link></li>
